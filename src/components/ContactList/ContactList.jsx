@@ -1,11 +1,22 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteContact } from '../../redux/contactReducer';
+import React, { useEffect } from 'react';
+import { deleteContact, fetchContacts } from '../../redux/contactReducer';
+import {
+  selectContacts,
+  selectContactsError,
+  selectContactsFilter,
+  selectContactsIsLoading,
+} from '../../redux/products.selectors';
+import Loader from '../../components/Loader/Loader';
+import ErrorMessage from '../../components/Error/ErrorMassege';
 import css from "./ContactList.module.css";
 import { AiFillCloseSquare } from "react-icons/ai";
 
 const ContactList = () => {
-  const contacts = useSelector(state => state.contacts.contacts);
-  const filter = useSelector(state => state.contacts.filter);
+  const contacts = useSelector(selectContacts);
+  const filter = useSelector(selectContactsFilter);
+  const error = useSelector(selectContactsError);
+  const isLoading = useSelector(selectContactsIsLoading);
 
   const dispatch = useDispatch();
 
@@ -23,13 +34,21 @@ const ContactList = () => {
     );
   };
 
-  const contFilter = [...getFilteredContacts()].reverse();
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
+  const contFilter = getFilteredContacts();
+
+
   return (
     <div className={css.contactlistform}>
+      {isLoading && <Loader />}
+      {error && <ErrorMessage message={error} />}
       <ul className={css.linone}>
         {contFilter.map((contact) => (
           <li className={css.liflex} key={contact.id}>
-            <div className={css.divflex}>{contact.name}: {contact.number}</div>
+            <div className={css.divflex}>{contact.name}: {contact.phone}</div>
             <div className={css.contactlistbutton} onClick={() => handleDelete(contact.id)}><AiFillCloseSquare className={css.iconcontacts}/></div>
           </li>
         ))}
