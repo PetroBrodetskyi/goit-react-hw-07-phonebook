@@ -38,15 +38,16 @@ const ContactList = () => {
     dispatch(fetchContacts());
   }, [dispatch]);
 
-  const contFilter = getFilteredContacts();
-
+  const sortedContacts = useSelector((state) =>
+    getFilteredContacts(state).slice().sort((a, b) => a.name.localeCompare(b.name))
+);
 
   return (
     <div className={css.contactlistform}>
       {isLoading && <Loader />}
       {error && <ErrorMessage message={error} />}
       <ul className={css.linone}>
-        {contFilter.map((contact) => (
+        {sortedContacts.map((contact) => (
           <li className={css.liflex} key={contact.id}>
             <div className={css.divflex}>{contact.name}: {contact.phone}</div>
             <div className={css.contactlistbutton} onClick={() => handleDelete(contact.id)}><AiFillCloseSquare className={css.iconcontacts}/></div>
